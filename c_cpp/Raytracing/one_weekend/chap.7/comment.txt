@@ -1,0 +1,69 @@
+Chapter 7: Diffuse Materials
+Now that we have objects and multiple rays per pixel, we can make some realistic looking
+materials. We’ll start with diffuse (matte) materials. One question is whether we can mix and
+match shapes and materials (so we assign a sphere a material) or if it’s put together so the
+geometry and material are tightly bound (that could be useful for procedural objects where the
+geometry and material are linked). We’ll go with separate-- which is usual in most renderers--
+but do be aware of the limitation.
+Diffuse objects that don’t emit light merely take on the color of their surroundings, but they
+modulate that with their own intrinsic color. Light that reflects off a diffuse surface has its
+direction randomized. So, if we send three rays into a crack between two diffuse surfaces they
+will each have different random behavior:
+
+They also might be absorbed rather than reflected. The darker the surface, the more likely
+absorption is. (That’s why it is dark!) Really any algorithm that randomizes direction will produce
+surfaces that look matte. One of the simplest ways to do this turns out to be exactly correct for
+ideal diffuse surfaces. (I used to do it as a lazy hack that approximates mathematically ideal
+Lambertian.)
+Pick a random point s from the unit radius sphere that is tangent to the hitpoint, and send a ray
+from the hitpoint p to the random point s. That sphere has center (p+N):
+
+We also need a way to pick a random point in a unit radius sphere centered at the origin. We’ll
+use what is usually the easiest algorithm: a rejection method. First, we pick a random point in
+the unit cube where x, y, and z all range from -1 to +1. We reject this point and try again if the
+point is outside the sphere. A do/while construct is perfect for that:
+
+Note the shadowing under the sphere. This picture is very dark, but our spheres only absorb
+half the energy on each bounce, so they are 50% reflectors. If you can’t see the shadow, don’t
+worry, we will fix that now. These spheres should look pretty light (in real life, a light grey). The
+reason for this is that almost all image viewers assume that the image is “gamma corrected”,
+meaning the 0 to 1 values have some transform before being stored as a byte. There are many
+good reasons for that, but for our purposes we just need to be aware of it. To a first
+approximation, we can use “gamma 2” which means raising the color to the power 1/gamma, or
+in our simple case ½, which is just square-root:
+
+That yields light grey, as we desire:
+There’s also a subtle bug in there. Some of the reflected rays hit the object they are reflecting
+off of not at exactly t=0, but instead at t=-0.0000001 or t=0.00000001 or whatever floating point
+approximation the sphere intersector gives us. So we need to ignore hits very near zero:
+This gets rid of the shadow acne problem. Yes it is really called that.
+
+-------------------------------------------------------------------------------------------------------------
+第7章：拡散材料
+オブジェクトとピクセルごとに複数の光線ができたので、現実的な外観のマテリアルを作成できます。
+拡散（マット）マテリアルから始めます。質問の1つは、形状とマテリアルを組み合わせて一致させることができるか（したがって、球体にマテリアルを割り当てるか）
+ジオメトリとマテリアルは緊密にバインドされています（ジオメトリとマテリアルがリンクされている手続き型オブジェクトに役立つ場合があります）。
+ほとんどのレンダラーで通常行われていますが、この制限に注意してください。光を発しない拡散オブジェクトは、単に周囲の色を取りますが、固有の色でそれを変調します。
+拡散面で反射する光の方向はランダムです。したがって、2つの拡散サーフェス間の亀裂に3つの光線を送信すると、それぞれ異なるランダムな動作になります。
+
+また、反映されるのではなく吸収される場合があります。表面が暗いほど、吸収される可能性が高くなります。 （それが暗い理由です！）
+方向をランダム化するアルゴリズムは、実際にはマットに見える表面を生成します。これを行う最も簡単な方法の1つは、
+理想的な拡散サーフェスに対して正確であることが判明しました。 （私は数学的に理想的なランバートに近い怠laなハックとしてそれを行っていました。）
+ヒットポイントに接する単位半径球からランダムポイントsを選択し、ヒットポイントpからランダムポイントsに光線を送信します。その球は中心を持っています（p + N）：
+
+また、原点を中心とする単位半径の球のランダムな点を選択する方法も必要です。通常、最も簡単なアルゴリズムである拒否方法を使用します。
+最初に、x、y、およびzがすべて-1から+1の範囲である単位立方体のランダムポイントを選択します。
+このポイントを拒否し、ポイントが球の外側にある場合は再試行します。 do / while構文はそのために最適です：
+
+球の下の影に注意してください。この画像は非常に暗いですが、私たちの球体は各バウンスでエネルギーの半分しか吸収しないため、
+50％の反射体です。影が見えなくても心配しないでください。すぐに修正します。これらの球体はかなり明るく見えるはずです（実際には、明るい灰色）。
+これは、ほとんどすべての画像ビューアーが画像が「ガンマ補正」されていることを前提としているためです。
+つまり、0から1の値はバイトとして保存される前に何らかの変換が行われます。
+それには多くの正当な理由がありますが、私たちの目的のためにそれを意識する必要があります。
+最初の近似では、「ガンマ2」を使用できます。これは、色を1 /ガンマの累乗に上げることを意味します。または
+単純なケースでは½、これは単なる平方根です。
+
+私たちが望むように、それは明るい灰色をもたらします：そこにも微妙なバグがあります。
+反射光線の一部は、正確にt = 0ではなく、t = -0.0000001またはt = 0.00000001、
+または球体インターセターが提供する浮動小数点近似値で反射しているオブジェクトに当たります。
+したがって、ゼロに非常に近いヒットを無視する必要があります。これは、にきびの影の問題を取り除きます。はい、それは本当にそれと呼ばれます。

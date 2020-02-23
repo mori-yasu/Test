@@ -1,0 +1,70 @@
+光線クラスの作成。背景の描画
+
+Chapter 3: Rays, a simple camera, and background
+The one thing that all ray tracers have is a ray class, and a computation of what color is seen
+along a ray. Let’s think of a ray as a function p( t) = A + t*B. Here p is a 3D position along a line
+in 3D. A is the ray origin and B is the ray direction. The ray parameter t is a real number (float
+in the code). Plug in a different t and p(t) moves the point along the ray. Add in negative t and
+you can go anywhere on the 3D line. For positive t, you get only the parts in front of A, and this
+is what is often called a half-line or ray. The example C = p(2) is shown here:
+The function p(t) in more verbose code form I call “point_at_parameter(t)”:
+
+Now we are ready to turn the corner and make a ray tracer. At the core of a ray tracer is to
+send rays through pixels and compute what color is seen in the direction of those rays. This is
+of the form calculate which ray goes from the eye to a pixel, compute what that ray intersects,
+and compute a color for that intersection point. When first developing a ray tracer, I always do
+a simple camera for getting the code up and running. I also make a simple color(ray) function
+that returns the color of the background (a simple gradient).
+I’ve often gotten into trouble using square images for debugging because I transpose x and y
+too often, so I’ll stick with a 200x100 image. I’ll put the “eye” (or camera center if you think of a
+camera) at (0,0,0). I will have the y-axis go up, and the x-axis to the right. In order to respect the
+convention of a right handed coordinate system, into the screen is the negative z-axis. I will
+traverse the screen from the lower left hand corner and use two offset vectors along the screen
+sides to move the ray endpoint across the screen. Note that I do not make the ray direction a
+unit length vector because I think not doing that makes for simpler and slightly faster code.
+
+Below in code, the ray r goes to approximately the pixel centers (I won’t worry about exactness
+for now because we’ll add antialiasing later)
+
+The color(ray) function linearly blends white and blue depending on the up/downess of the y
+coordinate. I first made it a unit vector so -1.0 < y < 1.0. I then did a standard graphics trick of
+scaling that to 0.0 < t < 1.0. When t=1.0 I want blue. When t = 0.0 I want white. In between, I
+want a blend. This forms a “linear blend”, or “linear interpolation”, or “lerp” for short, between two
+things. A lerp is always of the form: blended_value = (1-t)*start_value + t*end_value, with t
+going from zero to one. In our case this produces:
+
+-----------------------------------------------------------------------------------------------------------------
+第3章：光線、単純なカメラ、および背景
+すべてのレイトレーサーにある1つのことは、レイクラスと、表示される色の計算です。
+光線に沿って。光線を関数p（t）= A + t * Bとして考えてみましょう。ここで、pは線に沿った3D位置です
+3Dで。 Aは光線の原点、Bは光線の方向です。光線パラメータtは実数（float
+コード内）。別のtを接続すると、p（t）は点を光線に沿って移動します。負のtを追加し、
+3Dラインのどこにでも行けます。正のtの場合、Aの前の部分のみを取得し、これ
+多くの場合、ハーフラインまたはレイと呼ばれるものです。 C = p（2）の例を次に示します。
+「point_at_parameter（t）」と呼ぶより冗長なコード形式の関数p（t）：
+
+これで、角を曲がってレイトレーサーを作成する準備ができました。レイトレーサーの中核は
+ピクセルを介して光線を送信し、それらの光線の方向で見られる色を計算します。これは
+フォームのどの光線が目からピクセルに行くかを計算し、その光線が交差するものを計算し、
+その交点の色を計算します。レイトレーサーを最初に開発するとき、私はいつも
+コードを起動して実行するためのシンプルなカメラ。また、単純な色（線）関数を作成します
+背景の色を返します（単純なグラデーション）。
+xとyを転置するので、デバッグに正方形の画像を使用するのに苦労することがよくあります
+あまりにも頻繁なので、200x100の画像を使い続けます。私は「目」（または
+カメラ）（0,0,0）。 y軸を上に、x軸を右に移動します。を尊重するために
+右手座標系の慣例では、負のz軸が画面に表示されます。します
+左下隅から画面を走査し、画面に沿って2つのオフセットベクトルを使用する
+画面を横切ってレイエンドポイントを移動するための側面。レイの方向をaにしないことに注意してください
+私はそれをしないとコードがよりシンプルでわずかに速くなると思うので、ユニット長のベクトル。
+
+以下のコードでは、光線rはほぼピクセル中心に向かっています（正確さについては心配しません
+現時点では、後でアンチエイリアスを追加するため
+
+
+536/5000
+color（ray）関数は、yの上下に応じて白と青を線形にブレンドします
+座標。 最初に単位ベクトルにしたので、-1.0 <y <1.0です。 次に、標準のグラフィックトリックを行いました
+0.0 <t <1.0にスケーリングします。 t = 1.0の場合、青が必要です。 t = 0.0の場合、白が必要です。 間に、私は
+ブレンドが欲しい。 これは、2つの間で「線形ブレンド」、「線形補間」、または略して「許容」を形成します。
+もの。 lerpは常にblended_value =（1-t）* start_value + t * end_valueの形式です。
+ゼロから1になります。 私たちの場合、これは以下を生成します：

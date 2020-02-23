@@ -1,0 +1,33 @@
+{
+
+    "python.pythonPath": "D:/tools/anaconda3/python.exe",
+
+    "C_Cpp.default.includePath": [
+        "C:\\Program Files (x86)\\mingw64\\include",
+        "C:\\Program Files (x86)\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++",
+        "C:\\Program Files (x86)\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++\\x86_64-w64-mingw32"
+    ],
+
+    "C_Cpp.default.compilerPath": "C:\\Program Files (x86)\\mingw64\\bin\\g++.exe",
+    "C_Cpp.default.cppStandard": "c++14",
+    "C_Cpp.default.intelliSenseMode": "gcc-x64",
+    "files.associations": {
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstdint": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp",
+        "exception": "cpp",
+        "memory_resource": "cpp",
+        "utility": "cpp",
+        "initializer_list": "cpp",
+        "new": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp"
+    },
+
+}
