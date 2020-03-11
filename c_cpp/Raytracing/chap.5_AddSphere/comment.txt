@@ -1,0 +1,51 @@
+
+Let’s add a single object to our ray tracer. People often use spheres in ray tracers because
+calculating whether a ray hits a sphere is pretty straightforward. Recall that the equation for a
+sphere centered at the origin of radius R is x*x + y*y + z*z = R*R. The way you can read that
+equation is “for any (x, y, z), if x*x + y*y + z*z = R*R then (x,y,z) is on the sphere and otherwise
+it is not”. It gets uglier if the sphere center is at (cx, cy, cz):
+(x-cx)*(x-cx) + (y-cy)*(y-cy) + (z-cz)*(z-cz)= R*R
+In graphics, you almost always want your formulas to be in terms of vectors so all the x/y/z stuff
+is under the hood in the vec3 class. You might note that the vector from center C = (cx,cy,cz) to
+point p = (x,y,z) is (p - C) . And dot((p - C) ,(p - C) ) = (x-cx)*(x-cx) + (y-cy)*(y-cy) + (z-cz)*(z-cz).
+So the equation of the sphere in vector form is:
+dot((p - c) ,(p - c)) = R*R
+We can read this as “any point p that satisfies this equation is on the sphere”. We want to know
+if our ray p(t) = A + t*B ever hits the sphere anywhere. If it does hit the sphere, there is some t
+for which p(t) satisfies the sphere equation. So we are looking for any t where this is true:
+dot((p( t) - c) ,(p( t) - c)) = R*R
+or expanding the full form of the ray p( t) :
+dot((A + t*B - C) ,(A + t*B - C)) = R*R
+The rules of vector algebra are all that we would want here, and if we expand that equation and
+move all the terms to the left hand side we get:
+t*t*dot(B, B) + 2*t*dot(B,A-C) + dot(A-C,A-C) - R*R = 0
+The vectors and R in that equation are all constant and known. The unknown is t, and the
+equation is a quadratic, like you probably saw in your high school math class. You can solve for
+t and there is a square root part that is either positive (meaning two real solutions), negative
+(meaning no real solutions), or zero (meaning one real solution). In graphics, the algebra almost
+always relates very directly to the geometry. What we have is:
+If we take that math and hard-code it into our program, we can test it by coloring red any pixel
+that hits a small sphere we place at -1 on the z-axis:
+What we get is this:
+Now this lacks all sorts of things-- like shading and reflection rays and more than one object--
+but we are closer to halfway done than we are to our start! One thing to be aware of is that we
+tested whether the ray hits the sphere at all, but t < 0 solutions work fine. If you change your
+sphere center to z = +1 you will get exactly the same picture because you see the things behind
+you. This is not a feature! We’ll fix those issues next.
+
+=============================================================================================================
+
+単一のオブジェクトをレイトレーサーに追加しましょう。光線が球に当たるかどうかを計算することは非常に簡単なので、人々はしばしば光線トレーサーで球を使用します。半径Rの原点を中心とする球の方程式は、x * x + y * y + z * z = R * Rであることを思い出してください。あなたがそれを読むことができる方法
+方程式は「（x、y、z）に対して、x * x + y * y + z * z = R * Rの場合、（x、y、z）は球上にあり、そうでない場合はそうではありません」。球体の中心が（cx、cy、cz）にある場合はくなります：
+（x-cx）*（x-cx）+（y-cy）*（y-cy）+（z-cz）*（z-cz）= R * R
+グラフィックスでは、すべてのx / y / zの要素がvec3クラスの内部にあるため、ほとんどの場合、数式をベクトルの観点から求める必要があります。中心C =（cx、cy、cz）から点p =（x、y、z）へのベクトルは（p-C）であることに注意してください。そしてdot（（p-C）、（p-C））=（x-cx）*（x-cx）+（y-cy）*（y-cy）+（z-cz）*（z-cz ）。したがって、ベクトル形式の球の方程式は次のとおりです。
+dot（（p-c）、（p-c））= R * R
+これは「この方程式を満たす点pは球上にある」と読むことができます。光線p（t）= A + t * Bがどこでも球に当たるかどうかを知りたいです。球にぶつかると、p（t）が球方程式を満たすtがいくつかあります。そのため、これが当てはまるものを探しています。
+dot（（p（t）-c）、（p（t）-c））= R * R
+または光線p（t）の完全な形式を展開する：dot（（A + t * B-C）、（A + t * B-C））= R * R
+ここで必要なのはベクトル代数の規則だけです。その方程式を展開し、すべての項を左側に移動すると、次のようになります。
+t * t * dot（B、B）+ 2 * t * dot（B、A-C）+ dot（A-C、A-C）-R * R = 0
+その方程式のベクトルとRはすべて定数であり、既知です。未知数はtであり、方程式は二次方程式です。おそらく高校の数学の授業で見たようです。 tについて解くことができ、正（2つの実際の解を意味する）、負のいずれかの平方根部分があります。
+（実際の解がないことを意味する）、またはゼロ（1つの実際の解を意味する）。グラフィックスでは、代数はほとんど常に幾何学に非常に直接関係しています。私たちが持っているものは：その数学をプログラムにハードコードすると、z軸の-1に配置された小さな球にぶつかるピクセルを赤く色付けすることでテストできます。
+現在、これにはあらゆる種類のものがありません-シェーディングと反射光線と複数のオブジェクトのような-しかし、私たちは私たちが最初にいるよりも中途半端に近づいています！知っておくべきことの1つは、光線が球体にまったく当たるかどうかをテストしたが、t <0のソリューションは問題なく機能するということです。変更する場合
+球の中心をz = +1にすると、背後にあるものが見えるため、まったく同じ画像が得られます。これは機能ではありません！次にこれらの問題を修正します。

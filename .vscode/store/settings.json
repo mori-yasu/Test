@@ -1,0 +1,15 @@
+{
+
+    "python.pythonPath": "D:\\Personal\\06_tool\\Anaconda\\conda3.7\\python.exe",
+    "python.envFile": "${workspaceFolder}/.env",
+
+    "C_Cpp.default.includePath": [
+        "C:\\MinGW\\include",
+        "C:\\MinGW\\lib\\gcc\\mingw32\\8.2.0\\include\\c++",
+        "C:\\MinGW\\lib\\gcc\\mingw32\\8.2.0\\include\\c++\\mingw32"
+    ],
+    "C_Cpp.default.compilerPath": "[MINGW]\\bin\\g++.exe",
+    "C_Cpp.default.cppStandard": "c++14",
+    "C_Cpp.default.intelliSenseMode": "gcc-x64",
+
+}

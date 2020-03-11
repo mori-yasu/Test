@@ -1,0 +1,44 @@
+First, let’s get ourselves a surface normal so we can shade. This is a vector that is perpendicular
+to the surface, and by convention, points out. One design decision is whether these normals
+(again by convention) are unit length. That is convenient for shading so I will say yes, but I won’t
+enforce that in the code. This could allow subtle bugs, so be aware this is personal preference
+as are most design decisions like that. For a sphere, the normal is in the direction of the hitpoint
+minus the center:
+On the earth, this implies that the vector from the earth’s center to you points straight up. Let’s
+throw that into the code now, and shade it. We don’t have any lights or anything yet, so let’s just
+visualize the normals with a color map. A common trick used for visualizing normals (because
+it’s easy and somewhat intuitive to assume N is a unit length vector– so each component is
+between -1 and 1) is to map each component to the interval from 0 to 1, and then map x/y/z to
+r/g/b. For the normal we need the hit point, not just whether we hit or not. Let’s assume the
+closest hit point (smallest t). These changes in the code let us compute and visualize N:
+
+Now, how about several spheres? While it is tempting to have an array of spheres, a very clean
+solution is the make an “abstract class” for anything a ray might hit and make both a sphere and
+a list of spheres just something you can hit. What that class should be called is something of a
+quandary-- calling it an “object” would be good if not for “object oriented” programming.
+“Surface” is often used, with the weakness being maybe we will want volumes. “Hitable”
+emphasizes the member function that unites them. I don’t love any of these but I will go with
+“hitable”.
+
+This hitable abstract class will have a hit function that takes in a ray. Most ray tracers have
+found it convenient to add a valid interval for hits tmin to tmax, so the hit only “counts” if tmin < t
+< tmax. For the initial rays this is positive t, but as we will see, it can help some details in the
+code to have an interval tmin to tmax. One design question is whether to do things like compute
+the normal if we hit something; we might end up hitting something closer as we do our search,
+and we will only need the normal of the closest thing. I will go with the simple solution and
+compute a bundle of stuff I will store in some structure. I know we’ll want motion blur at some
+point, so I’ll add a time input variable. Here’s the abstract class:
+
+And here’s the sphere (note that I eliminated a bunch of redundant 2’s that cancel each other
+
+This yields a picture that is really just a visualization of where the spheres are along with their
+surface normal. This is often a great way to look at your model for flaws and characteristics.
+
+===============================================================================================================
+ず、シェーディングできるように、表面の法線を取得しましょう。これは表面に垂直なベクトルであり、慣例により指摘しています。設計上の決定事項の1つは、これらの法線が（やはり慣例により）ユニット長であるかどうかです。これはシェーディングに便利なので、「はい」と言いますが、コードでは強制しません。これにより、微妙なバグが発生する可能性があります。そのため、ほとんどの設計上の決定事項と同様、これは個人的な好みであることに注意してください。球の場合、法線はヒットポイントから中心を引いた方向にあります。
+地球上では、これは地球の中心からあなたへのベクトルが真上を指すことを意味します。それを今すぐコードに入れて、シェーディングしましょう。ライトなどはまだありませんので、カラーマップで法線を視覚化します。法線を視覚化するために使用される一般的なトリック（Nが単位長ベクトルであると想定するのは簡単で多少直感的であるため、各コンポーネントは-1と1の間です）は、各コンポーネントを0から1の間隔にマッピングし、xをマッピングすることです/ y / zに
+r / g / b。通常の場合、ヒットしたかどうかだけでなく、ヒットポイントが必要です。最も近いヒットポイント（最小t）を想定します。コードのこれらの変更により、Nを計算して視覚化できます。
+さて、いくつかの球体はどうですか？球体の配列を作成するのは魅力的ですが、非常にクリーンなソリューションは、レイがヒットする可能性のあるすべての「抽象クラス」を作成し、球体と球体のリストの両方をヒットできるものにすることです。そのクラスを呼び出す必要があるのは途方もないものです。「オブジェクト指向」プログラミングでない場合は、「オブジェクト」と呼ぶのが良いでしょう。
+「表面」がよく使用されますが、その弱点はボリュームが必要になることです。 「Hitable」は、それらを結合するメンバー関数を強調します。私はこれらのどれも好きではありませんが、「hitable」で行きます。このヒット可能な抽象クラスには、光線を取り込むヒット関数があります。ほとんどのレイトレーサーでは、ヒットtminからtmaxの有効な間隔を追加すると便利です。したがって、ヒットはtmin <t <tmaxの場合にのみ「カウント」されます。初期光線の場合、これは正のtですが、後で説明するように、tminからtmaxまでの間隔を設定することでコードの一部の詳細に役立ちます。設計上の問題の1つは、何かにぶつかった場合に法線を計算するようなことをするかどうかです。検索を行うと、より近いものにヒットする可能性があり、最も近いものの法線のみが必要になります。私は簡単な解決策に行きます
+いくつかの構造に格納するもののバンドルを計算します。ある時点でモーションブラーが必要になることがわかっているので、時間入力変数を追加します。抽象クラスは次のとおりです。
+そして、ここに球体があります（互いに相殺する冗長な2の束を削除したことに注意してください。これにより、球体が表面の法線に沿ってどこにあるかを実際に視覚化した画像が得られます。欠陥および特性。

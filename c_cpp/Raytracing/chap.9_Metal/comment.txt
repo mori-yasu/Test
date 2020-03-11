@@ -1,0 +1,97 @@
+If we want different objects to have different materials, we have a design decision. 
+We could have a universal material with lots of parameters and different material types just zero out some of those parameters.
+ This is not a bad approach. Or we could have an abstract material class that encapsulates behavior. 
+ I am a fan of the latter approach. For our program the material needs to do two things:
+
+Produce a scattered ray (or say it absorbed the incident ray).
+If scattered, say how much the ray should be attenuated.
+This suggests the abstract class:
+
+The hit_record is to avoid a bunch of arguments so we can stuff whatever info we want in there.
+You can use arguments instead; it’s a matter of taste.
+ Hittables and materials need to know each other so there is some circularity of the references.
+ In C++ you just need to alert the compiler that the pointer is to a class, which the “class material” in the hittable class below does:
+
+What we have set up here is that material will tell us how rays interact with the surface.
+hit_record is just a way to stuff a bunch of arguments into a struct so we can send them as a group.
+When a ray hits a surface (a particular sphere for example), the material pointer in the hit_record will be set to point at
+ the material pointer the sphere was given when it was set up in main() when we start.
+ When the color() routine gets the hit_record it can call member functions of the material pointer to find out what ray, if any, is scattered.
+
+To achieve this, we must have a reference to the material for our sphere class to returned within hit_record. See the lines below marked with /* NEW */.
+
+For the Lambertian (diffuse) case we already have, it can either scatter always and attenuate by its reflectance R,
+or it can scatter with no attenuation but absorb the fraction 1−R of the rays.
+Or it could be a mixture of those strategies. For Lambertian materials we get this simple class:
+
+Note we could just as well only scatter with some probability p and have attenuation be albedo/p. Your choice.
+
+For smooth metals the ray won’t be randomly scattered. The key math is: how does a ray get reflected from a metal mirror? Vector math is our friend here:
+
+The reflected ray direction in red is just (v+2B). In our design, N is a unit vector, but v may not be. The length of B should be dot(v,N). 
+Because v points in, we will need a minus sign, yielding:
+
+The metal material just reflects rays using that formula:
+
+We need to modify the color function to use this:
+
+You will also need to modify the sphere class to have a material pointer to it. And add some metal spheres:
+We can also randomize the reflected direction by using a small sphere and choosing a new endpoint for the ray:
+
+The bigger the sphere, the fuzzier the reflections will be. This suggests adding a fuzziness parameter 
+that is just the radius of the sphere (so zero is no perturbation).
+ The catch is that for big spheres or grazing rays, we may scatter below the surface.
+ We can just have the surface absorb those. We’ll put a maximum of 1 on the radius of the sphere which yields:
+
+We can try that out by adding fuzziness 0.3 and 1.0 to the metals:
+ 
+
+
+====================================================================================================================================================================
+異なるオブジェクトに異なるマテリアルを持たせたい場合は、設計を決定します。
+多くのパラメータと異なる材料タイプを使用して、これらのパラメータの一部をゼロにするユニバーサルマテリアルを作成できます。これは悪いアプローチではありません。
+または、動作をカプセル化する抽象マテリアルクラスを作成することもできます。
+ 私は後者のアプローチのファンです。私たちのプログラムでは、素材は2つのことを行う必要があります。
+
+1. 散乱光線を生成します（または、入射光線を吸収したと言います）。
+2.散らばっている場合は、レイを減衰させる量を指定します。
+
+これは、抽象クラスを示唆しています。
+
+hit_recordは、多数の引数を避けるため、必要な情報をそこに詰めることができます。
+代わりに引数を使用できます。それは好みの問題です。
+ヒットテーブルとマテリアルはお互いを知る必要があるので、参照にはある程度の循環性があります。
+C ++では、ポインタがクラスへのポインタであることをコンパイラに警告する必要があります。これは、以下のヒット可能クラスの「クラスマテリアル」が行います。
+
+ここで設定したのは、材料が光線が表面とどのように相互作用するかを教えてくれるということです。
+hit_recordは、一連の引数を構造体に詰め込んでグループとして送信できるようにするための単なる方法です。
+レイがサーフェス（特定の球体など）に当たると、hit_recordのマテリアルポインターは、開始時にmain（）で設定されたときに球体が与えられたマテリアルポインターを指すように設定されます。
+color（）ルーチンがhit_recordを取得すると、マテリアルポインターのメンバー関数を呼び出して、散乱している光線があればそれを検出できます。
+
+これを実現するには、hit_record内に返されるsphereクラスのマテリアルへの参照が必要です。 / * NEW * /でマークされた以下の行を参照してください。
+
+すでにあるランバート（拡散）の場合、常に散乱し、反射率Rで減衰することができます。
+または、減衰せずに散乱できますが、光線の割合1-Rを吸収します。
+または、これらの戦略の混合物である可能性があります。 Lambertianマテリアルの場合、次の簡単なクラスを取得します。
+
+ある程度の確率pでのみ散布し、減衰をアルベド/ pにできることに注意してください。あなたの選択。
+
+滑らかな金属の場合、光線はランダムに散乱しません。重要な数学は、どのように光線が金属鏡から反射されるのか？ここではベクトル演算が私たちの友達です。
+
+赤の反射光線の方向はちょうど（v + 2B）です。この設計では、Nは単位ベクトルですが、vはそうでない場合があります。 Bの長さはdot（v、N）でなければなりません。
+vが指すため、マイナス記号が必要になり、次のようになります。
+
+金属材料は、次の式を使用して光線を反射するだけです。
+
+これを使用するには、カラー関数を変更する必要があります。
+
+また、球体クラスを変更して、マテリアルポインターを持たせる必要があります。そして、いくつかの金属球を追加します。
+
+また、小さな球体を使用して、レイの新しいエンドポイントを選択することにより、反射方向をランダム化することもできます。
+
+球が大きいほど、反射はぼやけます。これは、ちょうど球体の半径であるファジーネスパラメーターを追加することを提案します（したがって、摂動はゼロではありません）。
+キャッチは、大きな球体や放牧光線の場合、表面の下に散乱する可能性があることです。
+表面にそれらを吸収させるだけです。球の半径に最大1を設定して、次の結果を得ます。
+
+金属にファジーネス0.3および1.0を追加することで、これを試すことができます。
+===================================================================================================================================================================

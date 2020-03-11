@@ -1,0 +1,52 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        //Python
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args":["--dataset", "CarPos_jpg", "--train"],//スクリプト実行時のオプション
+            "cwd": "${fileDirname}",//pythonスクリプトがあるディレクトリからデバック実行する
+        },
+        //Python
+        {
+            "name": "Python: GAN",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args":["--trainer", "UNIT", "--config", "configs/unit_cg2real_minimum_folder.yaml"],//スクリプト実行時のオプション
+            "cwd": "${fileDirname}",//pythonスクリプトがあるディレクトリからデバック実行する
+        },
+        
+        //C/C++
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "environment": [],
+            "cwd": "${fileDirname}",
+            "stopAtEntry": false,
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "c:\\mingw\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
+
