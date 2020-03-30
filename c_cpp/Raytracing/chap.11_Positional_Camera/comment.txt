@@ -1,0 +1,44 @@
+Cameras, like dielectrics, are a pain to debug.
+So I always develop mine incrementally.
+First, let’s allow an adjustable field of view (fov). This is the angle you see through the portal.
+Since our image is not square, the fov is different horizontally and vertically.
+I always use vertical fov. I also usually specify it in degrees and change to radians inside a constructor — a matter of personal taste.
+
+I first keep the rays coming from the origin and heading to the z=−1 plane. We could make it the z=−2 plane,
+or whatever, as long as we made h a ratio to that distance. Here is our setup:
+
+his implies h=tan(θ2). Our camera now becomes:
+
+When calling it with camera cam(90, double(image_width)/image_height) and these spheres:
+
+
+
+To get an arbitrary任意の viewpoint, let’s first name the points we care about.
+ We’ll call the position where we place the camera lookfrom, and the point we look at lookat. 
+ (Later, if you want, you could define a direction to look in instead of a point to look at.)
+任意の視点を取得するために、まず気になるポイントに名前をつけてみましょう。
+ カメラを設置する位置を lookfrom と呼び、見る点を lookat と呼びます（後に必要であれば、見る点の代わりに見る方向を定義することもできます）。
+ (後から必要に応じて、見る点の代わりに見る方向を定義することもできます)。
+
+We also need a way to specify the roll, or sideways tilt, of the camera; the rotation around the lookat-lookfrom axis.
+Another way to think about it is even if you keep lookfrom and lookat constant, you can still rotate your head around your nose.
+What we need is a way to specify an up vector for the camera.
+Notice we already have a plane that the up vector should be in, the plane orthogonal to the view direction.
+また、カメラのロール（横方向の傾き）を指定する方法も必要です。
+別の方法としては、ルックフロムとルックアットを一定にしていても、鼻の周りで頭を回転させることができます。
+必要なのは、カメラのアップベクトルを指定する方法です。
+上昇ベクトルがあるべき平面が既にあることに注意してください。
+
+We can actually use any up vector we want, and simply project it onto this plane to get an up vector for the camera.
+I use the common convention of naming a “view up” (vup) vector.
+A couple of cross products, and we now have a complete orthonormal basis (u,v,w) to describe our camera’s orientation.
+実際には任意のアップベクトルを使用して、この平面に投影するだけでカメラのアップベクトルを得ることができます。
+私は、"view up" (vup) ベクトルと命名する一般的な慣習を使用しています。これで、カメラの向きを記述するための完全な正規直交基底(u,v,w)が得られました。
+
+Remember that vup, v, and w are all in the same plane. Note that,
+like before when our fixed camera faced -Z,
+our arbitrary view camera faces -w. And keep in mind that we can — but we don’t have to — use world up (0,1,0) to specify vup.
+This is convenient and will naturally keep your camera horizontally level until you decide to experiment with crazy camera angles.
+vup, v, w はすべて同じ平面上にあることを覚えておいてください。固定カメラが -Z を向いていたときと同じように、
+任意のビューカメラが -w を向いていることに注意してください。また、ワールドアップ (0,1,0) を使って vup を指定することもできますが、その必要はありません。
+これは便利で、カメラを水平に保つことができます。

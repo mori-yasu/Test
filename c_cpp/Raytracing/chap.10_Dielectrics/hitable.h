@@ -11,7 +11,13 @@ struct hit_record
     float   t;    //パラメータ
     vec3    p;     //ベクトル
     vec3    normal;//法線単位ベクトル
+    bool front_face;    //どっち向きか
     material *mat_ptr;  //マテリアルポインタ
+
+    inline void set_face_normal(const ray& r, const vec3& outward_normal) {
+        front_face = dot(r.direction(), outward_normal) < 0;
+        normal = front_face ? outward_normal :-outward_normal;
+    }
 };
 
 //ヒット判定
