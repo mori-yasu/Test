@@ -1,0 +1,48 @@
+Now our final feature: defocus blur.
+ Note, all photographers will call it “depth of field” so be aware of only using “defocus blur” among friends.
+さて、最後の機能である「デフォーカスブラー」です。写真家の間ではこれを「被写界深度」と呼ぶので、
+友達の間でしか「デフォーカスブラー」と呼ばないように注意してください。
+
+The reason we defocus blur in real cameras is because they need a big hole (rather than just a pinhole) to gather light.
+ This would defocus everything, but if we stick a lens in the hole, there will be a certain distance where everything is in focus.
+ You can think of a lens this way: 
+  all light rays coming from a specific point at the focal distance — and that hit the lens — will be bent back to a single point on the image sensor.
+実物のカメラでデフォーカスボケをする理由は、光を集めるために大きな穴（ピンホールではなく）が必要だからです。
+これでは全てがデフォーカスされてしまいますが、穴にレンズを刺すと、全てにピントが合う一定の距離ができてしまいます。
+レンズはこのように考えることができます：焦点距離の特定の点から来たすべての光線-そしてレンズに当たった-は、イメージセンサー上の一点に曲げられて戻ってきます。
+
+In a physical camera, the distance to that plane where things are in focus is controlled by the distance between the lens and the film/sensor.
+That is why you see the lens move relative to the camera when you change what is in focus (that may happen in your phone camera too, but the sensor moves).
+The “aperture” is a hole to control how big the lens is effectively.
+For a real camera, if you need more light you make the aperture bigger, and will get more defocus blur.
+For our virtual camera, we can have a perfect sensor and never need more light, so we only have an aperture when we want defocus blur.
+物理的なカメラでは、ピントが合っているその面までの距離は、レンズとフィルム/センサーの間の距離によって制御されます
+ピントの合っているものを変えると、レンズがカメラに対して相対的に動くのはそのためです（携帯電話のカメラでもそうなるかもしれませんが、センサーは動きます）。
+絞り」は、レンズの大きさを効果的にコントロールするための穴です。
+実際のカメラでは、より多くの光を必要とする場合は、絞りを大きくして、より多くのデフォーカスボケを得ることになります。
+バーチャルカメラの場合は、完璧なセンサーを持っていて、光量を必要としないので、デフォーカスボケが必要なときだけ絞りを開けることができます。
+
+A real camera has a complicated compound lens.
+For our code we could simulate the order: 
+sensor, then lens, then aperture, and figure out where to send the rays and flip the image once computed (the image is projected upside down on the film).
+Graphics people usually use a thin lens approximation:
+実際のカメラは複雑な複合レンズを持っています。
+私たちのコードでは、センサー、レンズ、絞りの順でシミュレーションを行い、どこに光線を送るかを計算して画像を反転させることができます（画像はフィルム上に逆さまに投影されます）。
+グラフィックスの人たちは通常、薄いレンズの近似を使用します
+
+We don’t need to simulate any of the inside of the camera.
+For the purposes of rendering an image outside the camera,that would be unnecessary complexity.
+Instead, I usually start rays from the surface of the lens, and send them toward a virtual film plane,
+by finding the projection of the film on the plane that is in focus (at the distance focus_dist).
+カメラ内部のシミュレーションは必要ありません。
+カメラの外側の画像をレンダリングするという目的のためには、それは不要な複雑さになります。
+その代わりに、私は通常、レンズの表面から光線を出して、ピントが合っている面（距離 focus_dist）上のフィルムの投影を求めて、仮想のフィルム面に向かって光線を送ります。
+
+Normally, all scene rays originate from the lookfrom point.
+In order to accomplish defocus blur, generate random scene rays originating from inside a disk centered at the lookfrom point.
+The larger the radius, the greater the defocus blur.
+You can think of our original camera as having a defocus disk of radius zero (no blur at all), so all rays originated at the disk center (lookfrom).
+通常、すべてのシーン光線はルックフロムポイントから発生します。
+デフォーカスブラーを実現するためには、ルックフロムポイントを中心とした円盤の内側からランダムにシーン光線を生成します。
+半径が大きくなるほど、デフォーカスボケが大きくなります。オリジナルのカメラは、半径ゼロのデフォーカスディスクを持っていると考えることができます（全くぼかしがない）ので、
+すべての光線はディスクの中心（ルックフロム）から発生します。
